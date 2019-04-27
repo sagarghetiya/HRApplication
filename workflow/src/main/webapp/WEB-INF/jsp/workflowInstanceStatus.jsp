@@ -79,7 +79,12 @@
 				</div>
 
 				<!-- Modal body -->
-				<div class="modal-body">What do you want to do ?</div>
+				<div class="modal-body">
+					<label for="comments" >Please specify comments if any for the user who initiated the workflow:</label>
+					<input type="text" class="form-control" id="comments_user"/>
+					<label for="comments" >Please specify comments if any for next task's owner:</label>
+					<input type="text" class="form-control" id="comments_owner"/> 
+				</div>
 
 				<!-- Modal footer -->
 				<div class="modal-footer">

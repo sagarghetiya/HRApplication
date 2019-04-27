@@ -2,6 +2,8 @@ body {
   font-family: Arial;
 }
 #actionDiv{ cursor: pointer; }
+#download_file{cursor: pointer; }
+#upload_file{cursor: pointer; }
 input[type=text], select {
   width: 100%;
   padding: 12px 20px;

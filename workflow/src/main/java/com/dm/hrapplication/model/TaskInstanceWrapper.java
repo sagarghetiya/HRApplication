@@ -9,4 +9,5 @@ public class TaskInstanceWrapper {
 	public String taskStatus;
 	public String deadline;
 	public String userName;
+	public String isFileExist;
 }

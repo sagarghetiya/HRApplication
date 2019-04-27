@@ -33,7 +33,7 @@ function loadJQGrid(data) {
 						loadonce:true,
 						colNames : ['Task Id' , 'Task name', 'Task description',
              "Notificaton Status",
-								"Deadline", "Status", "Action","Owner","isAllowed"],
+								"Deadline", "Owner", "Status","Data","Action","isAllowed"],
 						colModel : [
 								{
 									name : 'taskInstanceId',
@@ -59,7 +59,7 @@ function loadJQGrid(data) {
 									name : "deadline",
 									width:80,
 									sortable: false
-                },
+								},
 								{
 									name : "userName",
 									width: 60
@@ -68,6 +68,19 @@ function loadJQGrid(data) {
 									name : "taskStatus",
 									width:60,
 									sortable: false
+								},
+								{
+									name: 'file',
+								    align: 'left',
+								    editable: true,
+								    edittype: 'file',
+								    editoptions: {
+								        enctype: "multipart/form-data"
+								    },
+								    width: 60,
+								    align: 'center',
+								    formatter: fileFormatter,
+								    search: false
 								},
 								{
 									name : "action",
@@ -89,20 +102,6 @@ function loadJQGrid(data) {
 					});
 	}
 function actionFormatter(cellValue, opts, rowObject) {
-	/*var flag = sessionStorage.getItem("workflowStatusFlag");
-	if (flag == "workflow") {
-		if (rowObject.taskStatus == "Pending" && workflowInstanceStatus !== "Rejected") {
-			return "<div class='text-center'><i class='fa fa-clock-o ' style='font-size:22px' ></i></div>";
-		} else if (rowObject.taskStatus == "Running") {
-			return "<div class='text-center'><i class='fa fa-cogs' style='font-size:22px' ></i></div>";
-		} else if (rowObject.taskStatus == "Completed") {
-			return "<div class='text-center'><i class='fa fa-check-square' style='font-size:22px' ></i></div>";
-		} else if (rowObject.taskStatus == "Rejected") {
-			return "<div class='text-center'><i class='fa fa-times-rectangle' style='font-size:22px' ></i></div>";
-		} else if (rowObject.taskStatus == "Pending" && workflowInstanceStatus =="Rejected") {
-			return "<div class='text-center'><i class='fa fa-warning' style='font-size:22px' ></i></div>";
-		}
-	} else {*/
 		if (rowObject.taskStatus == "Pending" && workflowInstanceStatus !== "Rejected") {
 			return "<div class='text-center'><i class='fa fa-clock-o ' style='font-size:22px' ></i></div>";
 		} else if (rowObject.taskStatus == "Running") {
@@ -120,7 +119,42 @@ function actionFormatter(cellValue, opts, rowObject) {
 		} else if (rowObject.taskStatus == "Pending" && workflowInstanceStatus =="Rejected") {
 			return "<div class='text-center'><i class='fa fa-warning' style='font-size:22px' ></i></div>";
 		}
-	//}
+}
+
+function fileFormatter(cellValue, opts, rowObject){
+	if(workflowInstanceStatus!="Rejected"){
+		if(rowObject.taskStatus == "Completed"){
+			if(rowObject.isFileExist == "true")
+				return "<div class='text-center'><a href='/downloadFile/"+rowObject.taskInstanceId+"'><i class='fa fa-cloud-download' style='font-size:22px' ></i></a></div>";
+			else
+				return "No file uploaded";
+		}
+		else if(rowObject.taskStatus == "Running"){
+			if(isAllowed == true){
+				if(rowObject.isFileExist ==  "true"){
+					return "<div class='text-center'><a href='/downloadFile/"+rowObject.taskInstanceId+"'><i class='fa fa-cloud-download' style='font-size:22px' ></i></a></div><div id='upload_file_div' ><input id='upload_file_running' type='file' /><div></div>";
+				}else{
+					return "<div class='text-center'><div id='upload_file_div' ><input id='upload_file_running' type='file' /><div></div>";
+				}
+			}else{
+				if(rowObject.isFileExist ==  "true"){
+					return "<div class='text-center'><a href='/downloadFile/"+rowObject.taskInstanceId+"'><i class='fa fa-cloud-download' style='font-size:22px' ></i></a></div>";
+				}else{
+					return "<div class='text-center'><label><i for='upload_file_pending' class='fa fa-cloud-upload' style='font-size:22px'></i></label><input id='upload_file_pending' type='file' style='display:none'/></div>";
+				}
+			}
+		}else{
+			return "<div class='text-center'><i class='fa fa-cloud-upload' style='font-size:22px' ></i></div>"; 
+		}
+	}else{
+		if(rowObject.taskStatus == "Completed"){
+			if(rowObject.isFileExist == "true")
+				return "<div class='text-center'><a href='/downloadFile/"+rowObject.taskInstanceId+"'><i class='fa fa-cloud-download' style='font-size:22px' ></i></a></div>";
+			else
+				return "No file uploaded";
+		}
+		return "Workflow rejected";
+	}
 }
 
 function colorRows(){
@@ -143,17 +177,26 @@ function colorRows(){
 
 function performTaskAction(id){
 	taskInstanceId = id;
+	$('#commentsUser').val('');
+	$('#commentsOwner').val('');
 	$("#taskActionModal").modal('show');
 }
 
 function approveTask(){
 	var userId = sessionStorage.getItem("userId");
+	var formData = new FormData(); 
+	var file = $("#upload_file_running")[0].files[0];
+	var commentsUser = $("#comments_user").val();
+	var commentsOwner = $("#comments_owner").val();
+	formData.append('file', file);
+	formData.append('commentsUser',commentsUser);
+	formData.append('commentsOwner',commentsOwner);
 	$.ajax({
 		type : "POST",
 		url : "/approveTask/"+taskInstanceId+"/"+userId,
-		contentType : "application/json", 
-		dataType : "json",
-		contentType : "application/json; charset=utf-8",
+		data : formData,
+		contentType : false, 
+		processData : false,
 		statusCode: {
 			200:function (){
 				$("#taskActionModal").modal('hide');
@@ -175,13 +218,19 @@ function approveTask(){
 
 function rejectTask(){
 	var userId = sessionStorage.getItem("userId");
+	var formData = new FormData(); 
+	var file = $("#upload_file_running")[0].files[0];
+	var commentsUser = $("#comments_user").val();
+	var commentsOwner = $("#comments_owner").val();
+	formData.append('file', file);
+	formData.append('commentsUser',commentsUser);
+	formData.append('commentsOwner',commentsOwner);
 	$.ajax({
 		type : "POST",
 		url : "/rejectTask/"+taskInstanceId+"/"+userId,
-		contentType : "application/json",
-		data : taskInstanceId,
-		dataType : "json",
-		contentType : "application/json; charset=utf-8",
+		data : formData,
+		contentType : false, 
+		processData : false,
 		statusCode : {
 			200:function(){
 				$("#taskActionModal").modal('hide');

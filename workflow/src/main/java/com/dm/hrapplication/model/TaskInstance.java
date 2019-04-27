@@ -1,17 +1,21 @@
 package com.dm.hrapplication.model;
 
 import java.io.Serializable;
+import java.sql.Blob;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,6 +36,11 @@ public class TaskInstance implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date taskInstaceDeadLine;
 
+	@Lob
+	@JsonIgnore
+	@Basic(fetch = FetchType.LAZY)
+	private Blob file;
+	
 	private String status;
 
 	@ManyToOne
@@ -61,6 +70,26 @@ public class TaskInstance implements Serializable {
 	@JsonIgnore
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	private String fileName;
+	
+	private String contentType;
+	
+	public String getFileName() {
+		return fileName;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
 
 	public User getUser() {
 		return user;
@@ -122,6 +151,14 @@ public class TaskInstance implements Serializable {
 
 	public void setUserIdList(List<Long> userIdList) {
 		this.userIdList = userIdList;
+	}
+
+	public Blob getFile() {
+		return file;
+	}
+
+	public void setFile(Blob file) {
+		this.file = file;
 	}
 	
 }

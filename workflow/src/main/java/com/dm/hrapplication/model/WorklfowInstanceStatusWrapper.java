@@ -9,5 +9,5 @@ public class WorklfowInstanceStatusWrapper {
 	public String workflowDescription;
 	public List<TaskInstanceWrapper> taskInstanceList = new ArrayList<TaskInstanceWrapper>();
 	public boolean isAllowed;
-	
+	public byte[] file;
 }

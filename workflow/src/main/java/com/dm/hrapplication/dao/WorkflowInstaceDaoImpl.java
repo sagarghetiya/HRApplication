@@ -156,7 +156,6 @@ public class WorkflowInstaceDaoImpl implements WorkflowInstanceDao {
 						System.out.println("Current Date::" + currentDate);
 						taskInstance.setTaskInstaceDeadLine(currentDate);
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -192,6 +191,9 @@ public class WorkflowInstaceDaoImpl implements WorkflowInstanceDao {
 			notificationService.createNotificationForUserGroup(nextTaskInstance.getTask().getUserGroup(), "Please Approve/Reject "+nextTaskInstance.getTask().getTaskName()+" of Workflow: "+nextTaskInstance.getWorkflowInstance().getWorkflow().getWorkflowName()+" intitated by User:"+user.getUserName(), workflowInstance.getWorkflowInstanceId(), nextTaskInstance.getTaskInstanceId());
 		}else {
 			notificationService.createNotificationForUser(user, "Please Approve/Reject Task: "+nextTaskInstance.getTask().getTaskName()+" of Workflow: "+nextTaskInstance.getWorkflowInstance().getWorkflow().getWorkflowName()+" intitated by User:"+user.getUserName(), workflowInstance.getWorkflowInstanceId(), nextTaskInstance.getTaskInstanceId());
+		}
+		if(nextTaskInstance.getTaskInstanceDeadLineInDateFormat().compareTo(new Date()) <0) {
+			notificationService.createNotificationForUser(user, "Deadline of Task: "+nextTaskInstance.getTask().getTaskName()+" of Workflow: "+nextTaskInstance.getWorkflowInstance().getWorkflow().getWorkflowName()+" has been missed. Deadline was: "+nextTaskInstance.getTaskInstaceDeadLine(), workflowInstance.getWorkflowInstanceId(), nextTaskInstance.getTaskInstanceId());
 		}
 	}
 

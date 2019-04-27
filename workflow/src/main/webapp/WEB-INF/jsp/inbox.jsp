@@ -41,7 +41,7 @@
 			</div>
 			<ul class="nav navbar-nav">
 				<li><a href="dashboard">Dashboard</a></li>
-				<li class="active"><a href="inbox">Inbox</a></li>
+				<li class="active"><a id="activeBar" href="inbox">Inbox</a></li>
 				<li><a href="myworkflow">My workflows</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
