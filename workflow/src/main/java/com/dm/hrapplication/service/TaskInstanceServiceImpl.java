@@ -239,13 +239,13 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
 				if (nextTaskInstance.getUser() == null) {
 					notificationService.createNotificationForUserGroup(nextTaskInstance.getTask().getUserGroup(),
 							"User: " + userDao.getUser(Long.parseLong(userId)).getUserName()
-							+ " has send you a comment:"+ commentsUser +"related to a task:" + taskInstance.getTask().getTaskName()
+							+ " has send you a comment:"+ commentsOwner +" related to a task:" + taskInstance.getTask().getTaskName()
 							+ " of workflow:" + taskInstance.getWorkflowInstance().getWorkflow().getWorkflowName(),
 					taskInstance.getWorkflowInstance().getWorkflowInstanceId(), taskInstance.getTaskInstanceId());	
 				} else {
 					notificationService.createNotificationForUser(listTaskInstance.get(0).getUser(),
 							"User: " + userDao.getUser(Long.parseLong(userId)).getUserName()
-									+ " has send you a comment:"+ commentsUser +"related to a task:" + taskInstance.getTask().getTaskName()
+									+ " has send you a comment:"+ commentsOwner +" related to a task:" + taskInstance.getTask().getTaskName()
 									+ " of workflow:" + taskInstance.getWorkflowInstance().getWorkflow().getWorkflowName(),
 							taskInstance.getWorkflowInstance().getWorkflowInstanceId(), taskInstance.getTaskInstanceId());
 				}
